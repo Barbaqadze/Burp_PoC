@@ -1,0 +1,83 @@
+Web cache poisoning
+
+https://portswigger.net/web-security/web-cache-poisoning
+
+
+Param Miner - Burp Extension which detect unkey headers.
+
+
+Using web cache poisoning to exploit unsafe handling of resource imports
+	Web cache poisoning with an unkeyed header
+		Home page contains cache poisoning vulnerability. Use "Param Miner" to determine which headers are unkey. notice that X-Forwarded-Host is unkey. Observe that the X-Forwarded-Host header has been used to dynamically generate an absolute URL for importing a JavaScript file stored at /resources/js/tracking.js. So Go to the exploit server and change the file name to match the path used by the vulnerable response: "/resources/js/tracking.js". In the body, enter the payload "alert(document.cookie)" and store the exploit. then Open the GET request for the home page in Burp Repeater and remove the cache buster. Add the following header - "X-Forwarded-Host: your-exploit-server-id.web-security-academy.net". Send your malicious request. Keep replaying the request until you see your exploit server URL being reflected in the response and X-Cache: hit in the headers.
+
+
+
+Using web cache poisoning to exploit cookie-handling vulnerabilities
+	Web cache poisoning with an unkeyed cookie
+		Home page contains cache poisoning vulnerability. Notice that Cookie parameter "fehost" is reflected into HTML. so we can change value of this. firstly we need to break "data" object and then add alert function. to do this use payload - "fehost=prod-cache-01"};alert(1);{//". and keep replaying the request until we cookie being reflected in the HTML and X-Cache: hit in the headers.
+
+	
+	Using multiple headers to exploit web cache poisoning vulnerabilities
+		Web cache poisoning with multiple headers
+			Home page contains cache poisoning vulnerability. Use "Param Miner" to determine which headers are unkey. notice that X-Forwarded-Scheme and X-Forwarded-Host headers are unkey. Firsty Find the GET request for the JavaScript file /resources/js/tracking.js and send it to Burp Repeater. Add a cache-buster query parameter and the X-Forwarded-Host header with an arbitrary hostname, such as example.com. Notice that this doesn't seem to have any effect on the response.Remove the X-Forwarded-Host header and add the X-Forwarded-Scheme header instead. Notice that if you include any value other than HTTPS, you receive a 302 response. The Location header shows that you are being redirected to the same URL that you requested, but using https://. Add the X-Forwarded-Host: example.com header back to the request, but keep X-Forwarded-Scheme: nothttps as well. Send this request and notice that the Location header of the 302 redirect now points to https://example.com/. Go to the exploit server and change the file name to match the path used by the vulnerable response: " /resources/js/tracking.js". In the body, enter the payload alert(document.cookie) and store the exploit.Go back to the request in Burp Repeater and set the X-Forwarded-Host header as follows, remembering to enter your own exploit server ID - "X-Forwarded-Host: your-exploit-server-id.web-security-academy.net. Make sure the X-Forwarded-Scheme header is set to anything other than HTTPS. Send the request until you see your exploit server URL reflected in the response and X-Cache: hit in the headers. 
+
+
+
+
+
+Exploiting responses that expose too much information
+	Targeted web cache poisoning using an unknown header
+		Home page contains cache poisoning vulnerability. Use "Param Miner" to determine which headers are unkey. notice that X--Host is unkey. Add the X-Host header with an arbitrary hostname, such as example.com. Notice that the value of this header is used to dynamically generate an absolute URL for importing the JavaScript file stored at /resources/js/tracking.js. Go to the exploit server and change the file name to match the path used by the vulnerable response: /resources/js/tracking.js. In the body, enter the payload alert(document.cookie) and store the exploit. Send the request until you see your exploit server URL reflected in the response and X-Cache: hit in the headers. Also Notice that the Vary header is used to specify that the User-Agent is part of the cache key. To target the victim, you need to find out their User-Agent. On the website, notice that the comment feature allows certain HTML tags. Post a comment containing a suitable payload to cause the victim's browser to interact with your exploit server, for example: <img src="https://your-exploit-server-id.web-security-academy.net/foo" />. Go to the blog page and double-check that your comment was successfully posted. Go to the exploit server and click the button to open the "Access log". Refresh the page every few seconds until you see requests made by a different user. This is the victim. Copy their User-Agent from the log.  Go back to your malicious request in Burp Repeater and paste the victim's User-Agent into the corresponding header. Remove the cache buster.  Keep sending the request until you see your exploit server URL reflected in the response and X-Cache: hit in the headers. 
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+Using web cache poisoning to exploit DOM-based vulnerabilities
+	Web cache poisoning to exploit a DOM vulnerability via a cache with strict cacheability criteria
+		https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-to-exploit-a-dom-vulnerability-via-a-cache-with-strict-cacheability-criteria
+
+
+
+	 Combining web cache poisoning vulnerabilities
+	 	https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-combining-vulnerabilities
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+		
+Exploiting an unkeyed query string
+	Web cache poisoning via an unkeyed query string
+		Home page contain Cache Poisoning. intercept home page and test with any query like "/?test=hacked". send until X-Cache get hit. then go to the home page and observe that "/?test=hacked" is reflected in the response. so use  payload "/?test='/><script>alert(1)</script>" until header gets hit and reload the home page to see our alert 
+
+
+
+Unkeyed query parameters
+	Web cache poisoning via an unkeyed query parameter
+		Home page contain Cache Poisoning. intercept home page and test with any query. notice that random parameters are keyd and doesnot reflected on the home page after header gets hit. so use parameter "utm_content" which is unkeyd on many websites. so send request with query  "/?utm_content='/><script>alert(1)</script>" until X-Cache gets hit and then check home page and see our reflected payload.
+
+
+
+
+Cache parameter cloaking
+	Parameter cloaking
+		Website contain cache poisoning. intercept home page and test parameter "utm_content". Observe that this parameter is cached into home page but unable to use any kind of payload because of encoding. so take attention to "/js/geolocate.js?callback=setCountryCookie" request. here we can use cloaking attack which serve our payload into js file. note that Ruby on Rails is used. so use payload "/js/geolocate.js?callback=setCountryCookie&utm_content=asd;callback=alert(1)" which will serve alert(1) into js file because of unkeyed "utm_content". 
+
+
+
+
+
+Exploiting fat GET support
+	Web cache poisoning via a fat GET request
+		Website contain cache poisoning. intercept home page and test with any query. oberve that none of them is cached sucessfuly. so take attention to "/js/geolocate.js?callback=setCountryCookie" request. this request is vulenarble bu fat GET support. so use parameter - "callback=alert(1)" alognside GET request. this will server our payload into js file which is cached sucessfuly.
+
+
+
+Normalized cache keys
+	URL normalization
+		Home Page contain chache poisoning. intercept home page and browse any non-existent path such as /random. Notice that the path you requested is reflected in the error message. so add a suitable reflected XSS payload to request line - "/random</p><script>alert(1)</script><p>foo".  Notice that if you request this URL in the browser, the payload doesn't execute because it is URL-encoded. In Burp Repeater, poison the cache with your payload and then immediately load the URL in the browser. This time, the alert() is executed because the browser's encoded payload was URL-decoded by the cache, causing a cache hit with the earlier request. 
+
+
+----------------------------------------------------------------------------------------------------------------------
+

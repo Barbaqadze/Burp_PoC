@@ -1,0 +1,30 @@
+Information disclosure vulnerabilities
+
+https://portswigger.net/web-security/information-disclosure
+
+
+
+
+
+
+Error messages
+	Information disclosure in error messages
+		Exemine product?productId=2 address and send string instead of number. for example product?productId=A. 
+
+Debugging data
+	Information disclosure on debug page
+		View Source code of webpage. scroll down and check comment which is address of phpinfo.php.
+
+Source code disclosure via backup files
+	Source code disclosure via backup files
+		Check /robots.txt. Exemine and go to Directory /backup. then open displated .bak file where credentials are stored
+
+Information disclosure due to insecure configuration
+	Authentication bypass via information disclosure
+		Send Trace request on /admin address. Check that "X-Custom-IP-Authorization: {ip} is used. so change {ip} to 127.0.0.1 and send request.
+
+Version control history
+	Information disclosure in version control history
+		wget -r { /.git } Directory. extract all logs with git log and git show commands.
+
+

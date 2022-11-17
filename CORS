@@ -1,0 +1,32 @@
+Cross-origin resource sharing
+		
+https://portswigger.net/web-security/cors
+
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/CORS%20Misconfiguration/README.md
+
+
+
+
+Vulnerabilities arising from CORS configuration issues
+	CORS vulnerability with basic origin reflection
+		Go to My-Account page. Check Burp Proxy Http History and observe that /accountDetails page is used where user private information is stored like API key and sessionID. Also note that response contains the Access-Control-Allow-Credentials header suggesting that it may support CORS. Send the request to Burp Repeater, and resubmit it with the added header: "Origin: https://example.com". Observe that the origin is reflected in the Access-Control-Allow-Origin header. So go to Exploit Server and Paste Payload - /CORS_Payloads/Origin_Reflection_payload and view access logs to gather victims sensitive info.
+
+	
+
+
+Whitelisted null origin value
+	CORS vulnerability with trusted null origin
+		Go to My-Account page. Check Burp Proxy Http History and observe that /accountDetails page is used where user private information is stored like API and sessionID. Also note that response contains the Access-Control-Allow-Credentials header suggesting that it may support CORS. Send the request to Burp Repeater, and resubmit it with the added header:  "Origin: null". Observe that the "null" origin is reflected in the Access-Control-Allow-Origin header. So go to Exploit Server and paste payload - "/CORS_Payloads/Null_Origin_Payload" and view access logs to gather victims sensitive info
+
+
+
+
+
+Exploiting XSS via CORS trust relationships
+	CORS vulnerability with trusted insecure protocols
+		Go to My-Account page. Check Burp Proxy Http History and observe that /accountDetails page is used where user private information is stoed like API and sessionID. Also note that response contains the Access-Control-Allow-Credentials header suggesting that it may support CORS. Send the request to Burp Repeater, and resubmit it with the added header  "Origin: http://subdomain.lab-id". Observe that the origin is reflected in the Access-Control-Allow-Origin header. Open a product page, click Check stock and observe that it is loaded using a HTTP URL on a subdomain. Observe that the productID parameter is vulnerable to XSS. So go to Exploit server and paste payload - "/CORS_Payloads/Trust_Origin_XSS_Payload" and view access logs to gather victims sensitive info.
+
+
+
+
+

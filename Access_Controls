@@ -1,0 +1,61 @@
+Access control
+
+https://portswigger.net/web-security/access-control
+
+
+
+
+
+Access control security models :
+	Discretionary access control (DAC)
+	Mandatory access control (MAC)
+	Role-based access control (RBAC)
+
+
+Unprotected functionality
+	Unprotected admin functionality
+		view /robots.txt file and open admin panel link.
+	Unprotected admin functionality with unpredictable URL
+		view source code and dig into javascript code where admin panel address is stored.
+
+
+Parameter-based access control methods
+	User role controlled by request parameter
+		Send request to /admin address. intercept request and change "Admin=False" to "Admin=True"
+	User role can be modified in user profile
+		Access account home page and change email. Notice that in response "roleid" is used. so add it in requst and change value from 1 to 2.
+
+
+Broken access control resulting from platform misconfiguration
+	URL-based access control can be circumvented
+		Send request in / directory with "X-Original-URL: /admin" parameter to access admin page
+	Method-based access control can be circumvented
+		login as wiener and sent GET Request instead of POST like : GET /admin-roles?username=asd&action=upgrade
+
+
+Horizontal privilege escalation
+	User ID controlled by request parameter 
+		Login as wiener and change "my-account?id=wiener" to "my-account?id=carlos"
+	User ID controlled by request parameter, with unpredictable user IDs 
+		Login as wiener and check posts. view source code of posts and notice post author user id is stored.
+	User ID controlled by request parameter with data leakage in redirect
+		Login as wiener and change "my-account?id=wiener" to "my-account?id=carlos". it will redirect but in response will be flag
+
+
+Horizontal to vertical privilege escalation
+	User ID controlled by request parameter with password disclosure
+		Login as wiener and change "my-account?id=wiener" to "my-account?id=adminsitrator". view source code to get administrator password.
+	Insecure direct object references
+		Open Live Chat page.Intercept /download-transcript/2.txt request and view other user transcripts by change text name to 1.txt
+
+
+Access control vulnerabilities in multi-step processes
+	Multi-step process with no access control on one step 
+		Exemine User Privilege upgrade with Admin account. then login as wiener and send second Confirm request with wiener session.
+
+
+Referer-based access control
+	Referer-based access control 
+		Exemine admin account and admin panel. then login as wiener and send upgrade user requst with referrer header which contain /admin.
+		
+

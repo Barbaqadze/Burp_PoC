@@ -1,0 +1,81 @@
+HTTP request smuggling
+
+https://portswigger.net/web-security/request-smuggling
+
+
+CL.TE : Frontend - Content-Lentght; Backend - Transfer-Encoding
+TE.CL : Frontend - Transfer-Encoding; Backend - Content-Lenghts
+TE.TE : Both - Transfer-Encoding
+
+
+
+
+How to perform an HTTP request smuggling attack
+	HTTP request smuggling, basic CL.TE vulnerability
+		Website contain CL.TE HTTP request smuggling Vulnerability. intercept home page and change method to POST or use HTTP request smuggling extender.. due to CL.TE is arise use "Transfer-Encoding: chunked" header at the end of headers which is processed by Backend server. then add "0" into new line which means that backend terminete process of this request and add remaining part into new request. and then add our PAYLOAD which we want to start new request. at this situation we have to add "G" which will process new request es GPOST instead of POST. POC - /CL.TE_basic.
+
+
+	HTTP request smuggling, basic TE.CL vulnerability
+		Website contain TE.CL HTTP request smuggling. intercept home page and run HTTP smuggling externer. notice that TE.CL vulnerability is detected so  first we need to go to the Repeater menu and ensure that the "Update Content-Length" option is unchecked. Also we  need to include the trailing sequence \r\n\r\n following the final 0. use "Transfer-Encoding: chunked". then udd Bytes of our payload into hex like "9C" which means 156 in decimal. and then add  our PAYLOAD into new line. after our payload add "0" to intercept requests. - /TE.CL_basic
+
+
+
+	HTTP request smuggling, obfuscating the TE header
+		Website contain TE.TE HTTP request vulnerability. intercept home page and run HTTP smuggling extender. notice that two Transfer-Encoding host is used. it means that TE.TE is used. one header is used for frontend and second one is used for backend.	so  first we need to go to the Repeater menu and ensure that the "Update Content-Length" option is unchecked. Also we  need to include the trailing sequence \r\n\r\n following the final 0. use "Transfer-Encoding: chunked". then user our PAYLOAD - /TE.TE_basic
+
+
+--------------------------------------------------------------------------------------------
+
+
+Confirming CL.TE vulnerabilities using differential responses
+	HTTP request smuggling, confirming a CL.TE vulnerability via differential responses
+		Website contain HTTP request smuggling. run HTTP request smuggling extender and notice that CL.TE is used. so use payload which descriped into - /CL.TE_basic.
+
+
+
+Confirming TE.CL vulnerabilities using differential responses
+	HTTP request smuggling, confirming a TE.CL vulnerability via differential responses
+		Website contain HTTP request smuggling. run HTTP request smuggling extender and notice that TE.CL is used. so use payload which is descriped into - /TE.CL_basic.
+
+
+
+----------------------------------------------------------------------------------------------
+
+
+Using HTTP request smuggling to bypass front-end security controls
+	Exploiting HTTP request smuggling to bypass front-end security controls, CL.TE vulnerability
+		Website contain HTTP request vulnerability. run extender HTTP request smugling extender and notice that CL.TE is used. to access /admin page firsty we need to use Transfer-Encoding header then our PAYLOAD with HOST: localhost header - /CL.TE_ Fronden_tBypass
+
+
+	Exploiting HTTP request smuggling to bypass front-end security controls, TE.CL vulnerability
+		Website contain HTTP request vulnerability. run extender HTTP request smugling extender and notice that TE.CL is used. to access /admin page firsty we need to use Transfer-Encoding header, also uncheck auto update content lenght from repeator then add our PAYLOAD with HOST: localhost header - /TE.CK_ Frondent_Bypass	
+
+
+`
+Revealing front-end request rewriting	
+	Exploiting HTTP request smuggling to reveal front-end request rewriting
+		Website contains HTTP smuggle vulnerability. run HTTP smuggler extender and notice that CL.TE is used. To access /admin interface we need to reveal headers which is add by front-end server. notice that on the home page search function reflects response based on our input. so use it to reveal headers which add by front-end server. create payload which send POST request to search function and then reflects it to response - "/CL.TE_reveal_headers". then send request to see which headers is add and observe that "X-OgUCJf-Ip: " header is used so send again request with "GET /admin" and add revelead header with 127.0.0.1 to access admin page. - /CL.TE_reveal_headers.
+
+
+
+
+Capturing other users' requests
+	Exploiting HTTP request smuggling to capture other users' requests
+		Website contains HTTP smuggle vulnerability. run HTTP smuggler extender and notice that CL.TE is used. Visit a blog post and post a comment.Send the comment-post request to Burp Repeater, shuffle the body parameters so the comment parameter occurs last, and make sure it still works. then view the blog post to see if there's a comment containing a user's request. Payload - "/CL.TE_capture_data"
+
+
+
+
+
+
+Using HTTP request smuggling to exploit reflected XSS
+	Exploiting HTTP request smuggling to deliver reflected XSS
+		Website contains HTTP smuggle vulnerability. run HTTP smuggler extender and notice that CL.TE is used. Visit a blog post, and send the request to Burp Repeater. Observe that the comment form contains your User-Agent header in a hidden input. Inject an XSS payload into the User-Agent header and observe that it gets reflected: " "/><script>alert(1)</script> ". Payload - "/CL.TE_XSS"
+
+
+
+---------------------------------------------------------------------------------------
+
+
+
+

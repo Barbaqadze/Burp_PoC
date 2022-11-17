@@ -1,0 +1,47 @@
+https://portswigger.net/web-security/oauth
+
+
+
+
+
+OAuth authentication
+	Authentication bypass via OAuth implicit flow
+		Website Conaints Oauth Vulnerability. Proxy the flow and notice that implicit grant type is used. View requests and notice that the client application (the blog website) receives some basic information about the user from the OAuth service. It then logs the user in by sending a POST request containing this information to its own /authenticate endpoint, along with the access token. So Send the "POST /authenticate" request with changed victim email - "carlos@carlos-montoya.net"  to login with other user without known their password.
+
+----------------------------------------------------------------------------------
+
+Flawed CSRF protection
+	Forced OAuth profile linking
+		Website Conaints Oauth Vulnerability. Proxy the flow and notice that Authontication code  grant type is used. Notice that you have the option to attach your social media profile to your existing account. use this and intercept requests to view Oauth flow. In the proxy history, study the series of requests for attaching a social profile.  observe that  "/oauth-linking"  request does not include a state parameter to protect against CSRF attacks. Turn on intercept and forwards any requests until we have intercepted the one for GET /oauth-linking?code=[...]. Right-click on this request and select "Copy URL".  . Right-click on this request and select "Copy URL". then drop the request. This is important to ensure that the code is not used and, therefore, remains valid. and then go to exploit server and and paste copied URL into iframe tag and deliver it to victim to attach our soccial account to him. then login with our social account to access admin account. 
+
+
+---------------------------------------------------------------------------------
+
+Leaking authorization codes and access tokens
+	OAuth account hijacking via redirect_uri
+		Website contains Oauth vulneravility. Proxy flow and notice that Authentication code grant type is used. Also notice that we can poison "/auth" request with "redirect_uri" parameter. so change "redirect_uri" parameter with our own exploit server and then construct a CSRF-like attack, tricking the victim's browser into initiating an OAuth flow that will send the code or token to an our-controlled redirect_uri. go to exploit server and make iframe tag with changed "redirect_uri" parameter and send it to victim to gather them code. then Log out of the blog website and then use the stolen code to navigate to: https://vulnerablesite.com/oauth-callback?code=STOLEN-CODE to  access their account
+
+
+--------------------------------------------------------------------------------
+
+Stealing codes and access tokens via a proxy page
+	Stealing OAuth access tokens via an open redirect
+		Website contains Ouath Vulnerability. Proxy flow and check requests. Notice that we can change "redirect_uri" parameter in "/auth" reuqest. also notice that we have open redirect vulneravility in to "/post/next?path={exploit server}". so use this to redirect user with stolen token into our exploit server. after steal token, send "/me" request with changed Authorization Bearer header with stolen token to retrieve API key. Exploit server payload - "/Steal_token_with_openredirect
+
+
+---------------------------------------------------------------------------------
+
+	Stealing OAuth access tokens via a proxy page
+		Complicated: https://portswigger.net/web-security/oauth/lab-oauth-stealing-oauth-access-tokens-via-a-proxy-page
+
+
+---------------------------------------------------------------------------------
+
+
+Unprotected dynamic client registration
+	SSRF via OpenID dynamic client registration
+		Website contains Oauth Vulneravility with SSRF.
+		https://portswigger.net/web-security/oauth/openid/lab-oauth-ssrf-via-openid-dynamic-client-registration
+
+
+---------------------------------------------------------------------------------

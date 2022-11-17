@@ -1,0 +1,44 @@
+Testing for WebSockets security vulnerabilities
+
+https://github.com/carlospolop/hacktricks/blob/master/pentesting-web/cross-site-websocket-hijacking-cswsh.md
+
+https://portswigger.net/web-security/websockets
+
+
+
+
+
+Manipulating WebSocket messages to exploit vulnerabilities
+	Manipulating WebSocket messages to exploit vulnerabilities
+		Live chat contains WebSocket vulnerability. Go to live chat and send message. intercept that packet and modify server to client request like - "<img src=1 onerror='alert(1)'>". it will create html img tag into server and generate XSS. JSON format would be - "{"message":"<img src=1 onerror='alert(1)'>"} ".
+
+
+
+--------------------------------------------------------------------------------------------
+
+
+
+Manipulating the WebSocket handshake to exploit vulnerabilities
+	Manipulating the WebSocket handshake to exploit vulnerabilities
+		Live chat contains WebSocket vulnerability. Go to live chat and send message. intercept that packet and send request with XSS like "<img src=1 onerror='alert(1)'>". Observe that the attack has been blocked, and that your WebSocket connection has been terminated. Click "Reconnect", and observe that the connection attempt fails because your IP address has been banned. Add the following header to the handshake request to spoof your IP address: X-Forwarded-For: 1.1.1.1 . Click "Connect" to successfully reconnect the WebSocket. Send a WebSocket message containing an obfuscated XSS payload, such as: <img src=1 oNeRrOr=alert`1`>
+
+
+
+----------------------------------------------------------------------------------------------
+
+
+
+Cross-site WebSocket hijacking
+
+
+Performing a cross-site WebSocket hijacking attack
+	Cross-site WebSocket hijacking
+		Live chat contains Websocket SSRF vulnerability.Click "Live chat" and send a chat message. In Burp Proxy, in the HTTP history tab, find the WebSocket handshake request. Observe that the request has no CSRF tokens. So use CSWSH payload - "/CSWSH_Payload". and store it in to our server and send it to victim to retrieve victim's chat history.
+
+
+
+----------------------------------------------------------------------------------------------
+
+
+
+

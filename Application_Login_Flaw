@@ -1,0 +1,69 @@
+Business logic vulnerabilities
+
+https://portswigger.net/web-security/logic-flaws
+
+
+
+
+Excessive trust in client-side controls
+	Excessive trust in client-side controls
+		Intercept packet when add item into card. notice parameter "price". change it to lower price and send.
+	2FA broken logic
+		Login as our own account. Notify that verify parameter is used. then logout and send GET/login2 request as parameter verify=victim. This ensures that a temporary 2FA code is generated for victim. then login as our own account and send invalid mfa code. send POST/login2 to intruder (Turbo) and wait for 302 response code.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Failing to handle unconventional input
+	High-level logic vulnerability
+		Intercept packet when add item into card. notice parameter "quantity". change it into negative value like -10 and send.
+	Low-level logic flaw
+		Intercept packet when add item into card. notice parameter "quantity". add it into turbo intruder and send requests until item value in card store will be negative.
+	Inconsistent handling of exceptional input
+		Register account with many letters. notice that only 255 byte is displayed into my account page. Forgery email - Add characters and email @dontwannacry.com until whole string  lenght will be 255 byte and then add our email address. it will forgery email and will be  @dontwannacry email address instead of our mail server address.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Trusted users won't always remain trustworthy
+	Inconsistent security controls
+		Register account. Go to my account page and change email address to privileged domain address like @dontwannacry.com to get admin access
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Users won't always supply mandatory input
+	Weak isolation on dual-use endpoint
+		Register account. Go to my account page and change current passwowd with administrator username. intercept packet and and delete "current password" parameter. then send packet.
+	Password reset broken logic
+		Go to password reset page where new passwords are prompted. send new passwords and intecept that request. check that "username" parameter is used. change it to victim user name and then send requests.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Users won't always follow the intended sequence
+	2FA simple bypass
+			Website doesn't actually check if it is  completed the second step before loading the page.
+	Insufficient workflow validation
+		Buy some low price item. notice that "GET /cart/order-confirmation?order-confirmed=true" is generated. so add our item into card and send again that raquest to buy victim item. Website doesnot check price or which item we buy.
+	Authentication bypass via flawed state machine
+		Login with our credentials. notice that user role assign is required after login. Drop this page from intercept and then go to root page to get adminisrator access
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Domain-specific flaws
+	Flawed enforcement of business rules
+		Notice that 2 Coupon code is available. one for sign up, second for free. Use both Alternately to get no restrict while using coupon code more than one time.
+	Infinite money logic flaw
+		Use macro to send requests in a row. notice that requsts 4 code must be used into request 5 as parameter.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+	
+Providing an encryption oracle
+	Authentication bypass via encryption oracle
+		Login as our credentials. Notice that when submit comment with invalid email address, it will generate error. dig into tha requests and notice that parameter "notification" is used, which is encrypted. decryption is in body text - "Invalid email address: our-email". use it to decrypt ciphertext. also use email submit form to encrypt. so use email administrator:time-stamp and send it with email submit form. it will generate encrypted text. make some encryption work and send request to home page. delete session entirely and change loggeed-in cookie with our generated encrypteed text. 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+

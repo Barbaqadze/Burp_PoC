@@ -1,0 +1,71 @@
+Authentication Vulnerabilities
+
+https://portswigger.net/web-security/authentication
+
+
+
+
+
+
+Password-based Login
+	Username enumeration
+		Username enumeration via different responses
+			Snipper attack against username and then password. wait for response lenght
+		Username enumeration via subtly different responses
+			Snipper attack against username and then password. select options - "Grep - Extract" with error message
+		Username enumeration via response timing
+			step 1 :  X-Forwarded-For   - IP SPoofing to bypass 30min restriction
+			step 2 :  Pitchfork attack. use 2 payloads. one for X-Forward-For and second for username and when password
+			step 3 :  select columns Resonse recieved and Response completed and filter higher
+	Flawed brute-force protection
+		Broken brute-force protection, IP block
+			Use macro to send our own account cretentials after every brute force request to bypass account lock restrioction.
+			macro :  Project options > Sessions > Session Handling Rules > add > Scope > Include All URLs > Extender (for Turbo intruder) > Details > Rule Actions > Add > Run a macro > Add > Select Requests where login credentials are stored > Test macro > OK
+		Username enumeration via account lock
+			Snipper attack agianst username. use wordlist where usernames repetaed 5 times. response length will be different for active user. then use "Grep - Extract" and select error message to detect valid password. 
+		Broken brute-force protection, multiple credentials per request
+			Snipper attack. set all passwords into "password" property of JSON format. then open response with browser.
+	HTTP basic authentication
+		Vulnerable
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+Multi-Factor Authentication
+	Bypassing two-factor authentication
+		2FA simple bypass
+			Website doesn't actually check whether or not you completed the second step before loading the page. 
+	Flawed two-factor verification logic
+		2FA broken logic
+			Login as our own account. Notify that verify parameter is used. then logout and send GET/login2 request as parameter verify=victim. This ensures that a temporary 2FA code is generated for victim. then login as our own account and send invalid mfa code. send POST/login2 to intruder (Turbo) and wait for 302 response code.
+	 Brute-forcing 2FA verification codes
+		2FA bypass using a brute-force attack
+			Use macro to send victim credentials after every intruder request to bypass account logout restriction
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+Vulnerabilities in other authentication mechanisms
+	Keeping users logged in
+		Brute-forcing a stay-logged-in cookie
+			Login as our own account and examine stay-logged-in cookie. it contain base64 and md5 hashes. then send to intruder GET/my-account request and "Grep - Extract" my-account page. wait for different response lenght and errors
+		Offline password cracking
+			XSS vulnerability in Comment section. send payload to send cookie into our exploit server.
+			Payloads : https://github.com/R0B1NL1N/WebHacking101/blob/master/xss-reflected-steal-cookie.md
+	Resetting user passwords
+		Password reset broken logic
+			Go to password reset page where new passwords are prompted. send new passwords and intecept that request. check that "username" parameter is used. change it to victim user name and then send requests.
+		Password reset poisoning via middleware
+			Send POST/forgot-password request and intercept it.change user parameter to victim user.  notice that X-Forwarded-Host header is supported. add our exploit server URL into X-Forwarded-Host header and sent request. check access logs to see stolen token.
+	Changing user passwords	
+		Password brute-force via password change
+			Logic flaw into our account page. send POST/my-account/change-password and change username to victim user. Brute force Current password and send different password and confirm passowrd parameters to check if current password is incorect. use "Grep - Extact" to check valid password with error messages
+
+------------------------------------------------------------------------------------------------------------------------------------- 
+Secure Authentication Mechanisms
+
+Use HTTPS insead of HTTP
+Strong password Policy
+Prevent username enumeration with same error messages (Status codes, Reposne lenght ) 
+Use CAPTCHA to restrict brute force
+Auditing any verification or validation logic ( Check that can be bypassed ) 
+Password Reset mechanism auditing
+MFA ( ideally is device or app that generates the verification code )

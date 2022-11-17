@@ -1,0 +1,52 @@
+https://portswigger.net/web-security/server-side-template-injection
+
+
+https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection
+
+
+
+
+Learn the basic template syntax
+	Basic server-side template injection
+		Notice that when you try to view more details about the first product, a GET request uses the "message" parameter to render "Unfortunately this product is out of stock" on the home page. So check payloads to detect which template engine is used. Notice that ERB template is used because payload - "<%= 7*7 %>" return 49. This indicates that we may have a server-side template injection vulnerability. so use payload to execute code - "<%= system("whoami") %>".
+
+
+	
+
+	Basic server-side template injection (code context)
+		Notice that on the "My account" page, you can select whether you want the site to use your full name, first name, or nickname. When you submit your choice, a POST request sets the value of the parameter "blog-post-author-display" to either user.name, user.first_name, or user.nickname. When you load the page containing your comment, the name above your comment is updated based on the current value of this parameter. So check payloads to detect which template engine is used. send payload - "blog-post-author-display=user.name}}{{7*7}}". Reload the page containing your test comment. Notice that the username now says Peter Wiener49}}, indicating that a server-side template injection vulnerability may exist in the code context. also notice that Tornado template is used. so change POST parameter like - "blog-post-author-display=user.name}}{% import os %}{{os.system('whoami')}}" to execute code.
+
+
+
+
+Read about the security implications
+	Server-side template injection using documentation
+		Login as our own "content-manager" user. view post and notice that we can edit posts. go to edit template and enter SSTI payload like - "${7*7}". which return "49". This indicates that we may have a server-side template injection vulnerability. then send payload which causes error. it will help us to indicate template engine. so send payload - "${foobar}" and pay attention to error message which shows that Freemarker template engine is used. so send payload which execute code into Freemarker template engine - "<p?<#assign ex = "freemarker.template.utility.Execute"?new()>${ ex("id")}</p>". 
+
+
+
+
+Look for known exploits
+	Server-side template injection in an unknown language with a documented exploit
+		Notice that when you try to view more details about the first product, a GET request uses the message parameter to render "Unfortunately this product is out of stock" on the home page. experiment by injecting a fuzz string containing template syntax from various different template languages, such as "${{<%[%'"}}%\", into the "message" parameter. Notice that when you submit invalid syntax, an error message is shown in the output. This identifies that the website is using Handlebars. search for Handlebars SSTI exploit. pay attention to payload which is URL encoded. use this payload with url encoded and enter it into "message" parameter to execute code. to view payload visit - "https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection". 
+
+
+
+
+Developer-supplied objects
+	Server-side template injection with information disclosure via user-supplied objects
+		Login as our own "content-manager" user. view post and notice that we can edit posts. go to edit template and enter SSTI payload like - "${7*7}". which return error where we can determine that django template is used. go to django SSTI documentation - "https://github.com/Lifars/davdts". run payload "{% debug %}" to determine which object is used. Observe that "settings" object is used and if we dive in django documentation we will notice that "settings" object have "SECRET_KEY" property. so send payload like - "{{settings.SECRET_KEY}}" to retrieve framework secret key.
+
+
+
+
+Constructing a custom exploit using an object chain
+	Server-side template injection in a sandboxed environment
+		Login as our own "content-manager" user. view post and notice that we can edit posts. go to edit template and enter SSTI payload like - "${7*7}". which return error where we can determine that Freemarker template engine is used which is protected with sandboxes. dig into Freemarker payload which bypass sandboxes. go to "https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection" and use Freemarker sandbox escape payload. paste it into edited template but it cause error which says that "article" object is unknown. so use object which we know and change "article" to "product" to execute code.
+
+
+
+
+Constructing a custom exploit using developer-supplied objects
+	Server-side template injection with a custom exploit
+		https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-with-a-custom-exploit

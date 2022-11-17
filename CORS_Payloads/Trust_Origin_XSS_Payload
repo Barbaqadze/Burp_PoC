@@ -1,0 +1,7 @@
+<script>
+
+document.location-"https://trusted-origin.example.com/?xss=<script>CORS-ATTACK-PAYLOAD</script>"
+
+</script>
+
+

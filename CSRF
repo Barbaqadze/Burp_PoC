@@ -1,0 +1,65 @@
+Cross-site request forgery (CSRF)
+
+
+
+
+
+
+
+
+How to construct a CSRF attack
+	CSRF vulnerability with no defenses
+		Email change function contains CSRF. so login as our credentials and request email change function. then go to burp and see that request doesnot contains CSRF token. so it is vulnerable. then use "CSRF PoC generator" and paste this code into exploit server and deliver it to victim. notice that CSRF PoC generator must contains "document.forms[0].submit();" which will automatically change email without user interaction.
+
+
+
+
+Validation of CSRF token depends on request method
+	CSRF where token validation depends on request method
+		Email change function contains CSRF.  Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used. so change request method from POST to GET and then generate CSRF PoC. then deliver it to victim.
+
+
+	
+
+Validation of CSRF token depends on token being present
+	CSRF where token validation depends on token being present
+		Email Change function contains CSRF.  Some applications correctly validate the token when it is present but skip the validation if the token is omitted. So remove the entire parameter containing the token to bypass the validation. then use CSRF PoC generator and deliver exploit to victim.
+
+
+
+
+
+CSRF token is not tied to the user session
+	CSRF where token is not tied to user session
+		Email Change function contains CSRF.  Some applications do not validate that the token belongs to the same session as the user who is making the request. Instead, the application maintains a global pool of tokens that it has issued and accepts any token that appears in this pool. In this situation, the attacker can log in to the application using their own account, obtain a valid token, and then feed that token to the victim user in their CSRF attack. So login as our account and create CSRF PoC generator. then deliver exploit to victim with our CSRF token.
+
+
+
+
+CSRF token is tied to a non-session cookie
+	CSRF where token is tied to non-session cookie
+		Email change function contains CSRF. some applications do tie the CSRF token to a cookie, but not to the same cookie that is used to track sessions. This can easily occur when an application employs two different frameworks, one for session handling and one for CSRF protection, which are not integrated together. If the web site contains any behavior that allows an attacker to set a cookie in a victim's browser, then an attack is possible. The attacker can log in to the application using their own account, obtain a valid token and associated cookie, leverage the cookie-setting behavior to place their cookie into the victim's browser, and feed their token to the victim in their CSRF attack. To exploit create CSTF PoC generator from email change request and add our own csrfkey which is tied on session. this will add our cookie to the victim website will use same csrf token as we have. and then Remove the script block, and instead add the following code to inject the cookie and submit the form: <img src="$cookie-injection-url" onerror="document.forms[0].submit();"/>
+
+
+
+
+CSRF token is simply duplicated in a cookie
+	CSRF where token is duplicated in cookie
+		Email change function contains CSRF. some applications do not maintain any server-side record of tokens that have been issued, but instead duplicate each token within a cookie and a request parameter. When the subsequent request is validated, the application simply verifies that the token submitted in the request parameter matches the value submitted in the cookie. This is sometimes called the "double submit" defense against CSRF. In this situation, the attacker can again perform a CSRF attack if the web site contains any cookie setting functionality. Here, the attacker doesn't need to obtain a valid token of their own. They simply invent a token (perhaps in the required format, if that is being checked), leverage the cookie-setting behavior to place their cookie into the victim's browser, and feed their token to the victim in their CSRF attack. to exploit create CSRF PoC generator from email change request and then Remove the script block, and instead add the following code to inject the cookie and submit the form: <img src="$cookie-injection-url" onerror="document.forms[0].submit();"/>
+
+
+
+
+Validation of Referer depends on header being present
+	CSRF where Referer validation depends on header being present
+		Email change function contains CSRF.  Some applications validate the Referer header when it is present in requests but skip the validation if the header is omitted.  In this situation, an attacker can craft their CSRF exploit in a way that causes the victim user's browser to drop the Referer header in the resulting request. There are various ways to achieve this, but the easiest is using a META tag within the HTML page that hosts the CSRF attack: <meta name="referrer" content="never">. to exploit use CSRF PoC Generator and then add meta tag which is mentioned ebove.
+
+
+
+
+Validation of Referer can be circumvented
+	CSRF with broken Referer validation	
+		Email change function contains CSRF.  Some applications validate the Referer header in a naive way that can be bypassed. For example, if the application validates that the domain in the Referer starts with the expected value, then the attacker can place this as a subdomain of their own domain.  Likewise, if the application simply validates that the Referer contains its own domain name, then the attacker can place the required value elsewhere in the URL. The website seems to accept any Referer header as long as it contains the expected domain somewhere in the string. To exploit use CSRF PoC generator and place history.pushState like "history.pushState("", "", "/?your-lab-id.web-security-academy.net")".  This will cause the Referer header in the generated request to contain the URL of the target site in the query string. so request will accepted. 
+
+
+
